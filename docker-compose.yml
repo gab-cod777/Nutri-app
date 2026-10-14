@@ -1,0 +1,34 @@
+# Banco de dados para desenvolvimento e apresentacao.
+#
+#   docker compose up -d      (ou: podman compose up -d)
+#
+# Cria o PostgreSQL 16 com o banco "nutrisnap" (usuario/senha: postgres/postgres)
+# em localhost:5432 - os mesmos valores do apps/api/.env.example.
+# A imagem oficial ja traz as extensoes que a migration usa (pgcrypto, citext, pg_trgm).
+#
+# Porta 5432 ocupada (ex.: Postgres instalado no computador)? Use outra:
+#   crie um arquivo .env NA RAIZ do projeto com a linha  NUTRISNAP_DB_PORT=5433
+#   (o docker compose le esse arquivo sozinho) e troque 5432 por 5433 nas duas
+#   URLs de apps/api/.env.
+#
+# Os dados ficam no volume "nutrisnap-db-data" e sobrevivem a `docker compose down`.
+# Para apagar tudo e comecar do zero: docker compose down -v
+services:
+  db:
+    image: docker.io/library/postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nutrisnap
+    ports:
+      - "${NUTRISNAP_DB_PORT:-5432}:5432"
+    volumes:
+      - nutrisnap-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nutrisnap"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  nutrisnap-db-data:

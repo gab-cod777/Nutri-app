@@ -1,0 +1,10 @@
+# Servico de IA do NutriSnap (visao). Torch CPU:
+#   pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1
+#   pip install -r requirements.txt
+fastapi==0.142.2
+uvicorn[standard]==0.54.0
+python-multipart==0.0.32
+pydantic==2.13.5
+pillow==12.3.0
+numpy==2.5.3
+transformers==5.18.0

@@ -1,0 +1,858 @@
+// NutriSnap - schema do banco de dados
+//
+// Convencoes:
+//  - Ids sao UUID gerados pelo Postgres (gen_random_uuid, extensao pgcrypto).
+//  - Autenticacao propria: `users` guarda o e-mail e o HASH da senha (scrypt,
+//    nunca a senha). A API emite o JWT; `token_version` invalida tokens antigos
+//    (troca de senha, logout geral, exclusao de conta).
+//  - Valores nutricionais em Float. Precisao decimal exata nao importa em
+//    nutricao (a fonte do dado ja tem +/-10% de erro) e Decimal do Prisma
+//    forcaria conversao manual em todo o codigo TypeScript.
+//  - Os valores dos enums sao IDENTICOS aos de `packages/core/src/schemas/enums.ts`.
+//    Mudar um valor aqui sem mudar la (ou vice-versa) quebra em runtime, nao em
+//    compile time. Ha um teste de contrato em `apps/api/tests/enum-parity.test.ts`.
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "postgresqlExtensions"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+
+  // pgcrypto: gen_random_uuid()  |  citext: e-mail case-insensitive
+  // pg_trgm: busca textual por similaridade na base de alimentos
+  extensions = [pgcrypto, citext, pg_trgm]
+}
+
+// ---------------------------------------------------------------------------
+// ENUMS
+// ---------------------------------------------------------------------------
+
+enum Sex {
+  male
+  female
+  other
+}
+
+enum ActivityLevel {
+  sedentary
+  lightly_active
+  moderately_active
+  very_active
+  extremely_active
+}
+
+enum Goal {
+  lose_weight
+  gain_muscle
+  maintain_weight
+  improve_conditioning
+  body_recomposition
+}
+
+enum GoalPace {
+  slow
+  moderate
+  aggressive
+}
+
+enum TrainingExperience {
+  beginner
+  intermediate
+  advanced
+}
+
+enum TrainingLocation {
+  gym
+  home
+  outdoor
+  hybrid
+}
+
+enum Equipment {
+  none
+  dumbbells
+  barbell
+  kettlebell
+  resistance_bands
+  pull_up_bar
+  bench
+  cable_machine
+  machines
+  cardio_machine
+}
+
+enum DietaryRestriction {
+  vegetarian
+  vegan
+  lactose_free
+  gluten_free
+  nut_allergy
+  seafood_allergy
+  egg_allergy
+  halal
+  kosher
+  low_sodium
+  diabetic
+}
+
+enum MealType {
+  breakfast
+  morning_snack
+  lunch
+  afternoon_snack
+  dinner
+  supper
+}
+
+enum MeasureUnit {
+  g
+  ml
+  unit
+  slice
+  cup
+  tablespoon
+  teaspoon
+  scoop
+}
+
+enum FoodCategory {
+  grain
+  protein
+  dairy
+  vegetable
+  fruit
+  legume
+  fat_oil
+  beverage
+  sweet
+  ultra_processed
+  supplement
+  prepared_dish
+  other
+}
+
+enum FoodSource {
+  internal
+  external
+  user
+  ai_estimated
+}
+
+enum PortionSource {
+  ai_estimate
+  user_adjusted
+  manual_entry
+  barcode
+  meal_plan
+}
+
+enum PreparationMethod {
+  raw
+  boiled
+  steamed
+  grilled
+  baked
+  sauteed
+  fried
+  deep_fried
+  breaded_fried
+  stewed
+  unknown
+}
+
+enum ImageQuality {
+  good
+  fair
+  poor
+}
+
+enum HiddenCalorieRisk {
+  low
+  medium
+  high
+}
+
+enum MuscleGroup {
+  chest
+  back
+  shoulders
+  biceps
+  triceps
+  forearms
+  quads
+  hamstrings
+  glutes
+  calves
+  abs
+  full_body
+  cardio
+}
+
+enum WorkoutStatus {
+  scheduled
+  in_progress
+  completed
+  skipped
+}
+
+enum PlanStatus {
+  active
+  archived
+  generating
+  failed
+}
+
+enum ProgressMetric {
+  weight_kg
+  body_fat_percentage
+  waist_cm
+  hip_cm
+  chest_cm
+  arm_cm
+  thigh_cm
+}
+
+/// Chamadas ao servico de IA (Python). Hoje so a analise de foto usa IA.
+enum AiOperation {
+  analyze_meal_image
+}
+
+enum AiCallStatus {
+  success
+  validation_failed
+  provider_error
+  timeout
+  rejected_not_food
+}
+
+// ---------------------------------------------------------------------------
+// USUARIO
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String @unique @db.Citext
+  /// scrypt: "scrypt$N$r$p$salt$hash" (base64). Nunca a senha em texto.
+  passwordHash String @map("password_hash") @db.VarChar(255)
+  /// Incrementado para invalidar todos os tokens emitidos antes.
+  tokenVersion Int    @default(0) @map("token_version")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  profile          UserProfile?
+  nutritionTargets NutritionTarget[]
+  meals            Meal[]
+  mealAnalyses     MealAnalysis[]
+  customFoods      Food[]
+  mealPlans        MealPlan[]
+  workoutPlans     WorkoutPlan[]
+  workoutLogs      WorkoutLog[]
+  progressLogs     ProgressLog[]
+  aiUsageLogs      AiUsageLog[]
+
+  /// Exclusao de conta (LGPD) e DELETE real: o cascade apaga todos os dados do
+  /// usuario. `ai_usage_logs` ficam anonimizados (user_id -> NULL).
+  @@map("users")
+}
+
+model UserProfile {
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String @unique @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  displayName String   @map("display_name") @db.VarChar(60)
+  sex         Sex
+  /// Guardamos a data, nao a idade: idade envelhece e desatualiza a TMB sozinha.
+  birthDate   DateTime @map("birth_date") @db.Date
+  heightCm    Float    @map("height_cm")
+  weightKg    Float    @map("weight_kg")
+
+  bodyFatPercentage Float? @map("body_fat_percentage")
+  targetWeightKg    Float? @map("target_weight_kg")
+
+  goal          Goal
+  pace          GoalPace      @default(moderate)
+  activityLevel ActivityLevel @map("activity_level")
+
+  trainingDaysPerWeek    Int              @map("training_days_per_week")
+  sessionDurationMinutes Int              @default(60) @map("session_duration_minutes")
+  experience             TrainingExperience
+  trainingLocation       TrainingLocation @map("training_location")
+  availableEquipment     Equipment[]      @map("available_equipment")
+  limitations            String[]         @default([])
+
+  restrictions   DietaryRestriction[] @default([])
+  dislikedFoods  String[]             @default([]) @map("disliked_foods")
+  favoriteFoods  String[]             @default([]) @map("favorite_foods")
+  mealsPerDay    Int                  @default(4) @map("meals_per_day")
+
+  /// IANA timezone. Define a virada do dia no diario alimentar.
+  timezone String @default("America/Sao_Paulo") @db.VarChar(64)
+  locale   String @default("pt-BR") @db.VarChar(10)
+
+  onboardingCompletedAt DateTime? @map("onboarding_completed_at")
+  /// LGPD art. 11: momento do consentimento explicito para dados de saude
+  /// (peso, medidas, fotos de refeicao). Gravado no onboarding.
+  healthDataConsentAt   DateTime? @map("health_data_consent_at")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  @@map("user_profiles")
+}
+
+/// Metas caloricas com historico.
+///
+/// POR QUE NAO GUARDAR A META DENTRO DE UserProfile: o diario de 12 de marco
+/// precisa ser comparado com a meta que valia em 12 de marco. Se a meta vivesse
+/// no perfil, mudar de "perder peso" para "ganhar massa" reescreveria
+/// retroativamente todo o historico de aderencia do usuario.
+model NutritionTarget {
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  effectiveFrom DateTime  @map("effective_from") @db.Date
+  effectiveTo   DateTime? @map("effective_to") @db.Date
+
+  bmr           Float
+  tdee          Float
+  activityFactor Float @map("activity_factor")
+  bmrFormula    String @map("bmr_formula") @db.VarChar(20)
+
+  calories Float
+  protein  Float
+  carbs    Float
+  fat      Float
+  fiber    Float
+
+  goal            Goal
+  pace            GoalPace
+  isManualOverride Boolean  @default(false) @map("is_manual_override")
+  warnings        String[]  @default([])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId, effectiveFrom(sort: Desc)])
+  @@map("nutrition_targets")
+}
+
+// ---------------------------------------------------------------------------
+// ALIMENTOS
+// ---------------------------------------------------------------------------
+
+model Food {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String       @db.VarChar(120)
+  /// snake_case em ingles. Chave de match com o output da IA.
+  canonicalName String       @map("canonical_name") @db.VarChar(60)
+  brand         String?      @db.VarChar(80)
+  category      FoodCategory
+  source        FoodSource   @default(internal)
+  barcode       String?      @db.VarChar(14)
+  baseUnit      MeasureUnit  @default(g) @map("base_unit")
+
+  caloriesPer100 Float @map("calories_per_100")
+  proteinPer100  Float @map("protein_per_100")
+  carbsPer100    Float @map("carbs_per_100")
+  fatPer100      Float @map("fat_per_100")
+  fiberPer100    Float @default(0) @map("fiber_per_100")
+  sodiumMgPer100 Float? @map("sodium_mg_per_100")
+
+  preparationMethod   PreparationMethod @default(unknown) @map("preparation_method")
+  /// Porcao tipica em gramas. Base do gerador de cardapio e da estimativa da IA.
+  typicalPortionGrams Float?            @map("typical_portion_grams")
+  /// Usadas para filtrar restricoes no gerador de cardapio:
+  /// animal, meat, fish, pork, egg, dairy, lactose, gluten, nuts, soy, legume, sugary.
+  tags                String[]          @default([])
+
+  /// Null = alimento publico. Preenchido = alimento privado do usuario.
+  ownerId String? @map("owner_id") @db.Uuid
+  owner   User?   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  /// Revisado por nos. So alimentos verificados aparecem no topo da busca.
+  isVerified Boolean @default(false) @map("is_verified")
+
+  /// Rastreabilidade da origem do dado (ex.: "TACO 4a edicao, id 63").
+  sourceReference String? @map("source_reference") @db.VarChar(200)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  servings      FoodServing[]
+  mealFoods     MealFood[]
+  mealPlanItems MealPlanItem[]
+
+  /// Um alimento publico so pode ter um canonicalName. Alimentos de usuario
+  /// nao entram na unicidade (o indice parcial vai na migration SQL).
+  @@unique([canonicalName, ownerId], name: "food_canonical_owner")
+  @@index([barcode])
+  @@index([ownerId])
+  @@index([category])
+  /// Busca textual: a migration adiciona um indice GIN com pg_trgm sobre `name`,
+  /// que o Prisma nao expressa nativamente.
+  @@index([name])
+  @@map("foods")
+}
+
+model FoodServing {
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  foodId String @map("food_id") @db.Uuid
+  food   Food   @relation(fields: [foodId], references: [id], onDelete: Cascade)
+
+  label            String      @db.VarChar(40)
+  unit             MeasureUnit
+  quantity         Float
+  /// Peso em gramas de `quantity` unidades. Torna a conversao exata.
+  gramsEquivalent  Float       @map("grams_equivalent")
+  isDefault        Boolean     @default(false) @map("is_default")
+
+  @@index([foodId])
+  @@map("food_servings")
+}
+
+// ---------------------------------------------------------------------------
+// DIARIO ALIMENTAR
+// ---------------------------------------------------------------------------
+
+model Meal {
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  mealType   MealType @map("meal_type")
+  consumedAt DateTime @map("consumed_at") @db.Timestamptz(3)
+  /// Dia LOCAL do usuario (ja convertido pelo timezone do perfil).
+  /// Denormalizado de proposito: o diario filtra por dia local, e derivar isso
+  /// de `consumedAt` em SQL impediria o uso de indice.
+  localDate  DateTime @map("local_date") @db.Date
+
+  title String? @db.VarChar(140)
+  notes String? @db.VarChar(500)
+
+  /// Totais denormalizados. O resumo diario vira UMA leitura indexada em vez de
+  /// join + agregacao sobre meal_foods. Recalculados em transacao a cada
+  /// escrita de MealFood - ver `apps/api/src/modules/diario/diario.service.ts`.
+  totalCalories Float @default(0) @map("total_calories")
+  totalProtein  Float @default(0) @map("total_protein")
+  totalCarbs    Float @default(0) @map("total_carbs")
+  totalFat      Float @default(0) @map("total_fat")
+  totalFiber    Float @default(0) @map("total_fiber")
+
+  analysisId String?       @unique @map("analysis_id") @db.Uuid
+  analysis   MealAnalysis? @relation(fields: [analysisId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  foods MealFood[]
+
+  @@index([userId, localDate])
+  @@index([userId, consumedAt(sort: Desc)])
+  @@map("meals")
+}
+
+model MealFood {
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mealId String @map("meal_id") @db.Uuid
+  meal   Meal   @relation(fields: [mealId], references: [id], onDelete: Cascade)
+
+  /// Null quando a IA identificou algo fora da base. O snapshot abaixo garante
+  /// que o registro continua completo.
+  foodId String? @map("food_id") @db.Uuid
+  food   Food?   @relation(fields: [foodId], references: [id], onDelete: SetNull)
+
+  /// Snapshot imutavel. Se a base corrigir as calorias do arroz amanha, o
+  /// diario de ontem NAO muda - o historico do usuario e um fato, nao uma view.
+  nameSnapshot    String @map("name_snapshot") @db.VarChar(120)
+  caloriesPer100  Float  @map("calories_per_100")
+  proteinPer100   Float  @map("protein_per_100")
+  carbsPer100     Float  @map("carbs_per_100")
+  fatPer100       Float  @map("fat_per_100")
+  fiberPer100     Float  @default(0) @map("fiber_per_100")
+
+  quantity          Float
+  unit              MeasureUnit
+  grams             Float
+  preparationMethod PreparationMethod @default(unknown) @map("preparation_method")
+
+  calories Float
+  protein  Float
+  carbs    Float
+  fat      Float
+  fiber    Float @default(0)
+
+  /// Telemetria de qualidade da IA: com que frequencia o usuario corrige, e
+  /// quanto. Alimenta o ajuste dos limiares de confianca.
+  portionSource     PortionSource @map("portion_source")
+  aiConfidence      Float?        @map("ai_confidence")
+  aiEstimatedGrams  Float?        @map("ai_estimated_grams")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([mealId])
+  @@index([foodId])
+  @@map("meal_foods")
+}
+
+/// Auditoria de cada analise de foto.
+///
+/// Guardamos o output cru do modelo separado da refeicao salva. Isso permite
+/// medir o delta entre o que a IA estimou e o que o usuario corrigiu - a
+/// metrica mais importante para evoluir o prompt.
+model MealAnalysis {
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// SHA-256 da foto. A foto em si NAO e armazenada (dado sensivel, LGPD);
+  /// o hash so serve para nao reanalisar a mesma imagem.
+  imageSha256 String @map("image_sha256") @db.Char(64)
+
+  isFood            Boolean
+  rejectionReason   String?           @map("rejection_reason") @db.VarChar(200)
+  imageQuality      ImageQuality      @map("image_quality")
+  hiddenCalorieRisk HiddenCalorieRisk @map("hidden_calorie_risk")
+  overallConfidence Float             @map("overall_confidence")
+  needsConfirmation Boolean           @map("needs_confirmation")
+
+  /// Output validado do modelo, na integra.
+  rawOutput Json @map("raw_output")
+
+  provider     String @db.VarChar(40)
+  model        String @db.VarChar(80)
+  modelVersion String @map("model_version") @db.VarChar(30)
+  processingMs Int    @map("processing_ms")
+
+  /// true quando o usuario efetivamente salvou uma refeicao a partir desta analise.
+  wasAccepted Boolean @default(false) @map("was_accepted")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  meal Meal?
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([userId, imageSha256])
+  @@index([wasAccepted])
+  @@map("meal_analyses")
+}
+
+// ---------------------------------------------------------------------------
+// PLANO ALIMENTAR
+// ---------------------------------------------------------------------------
+
+model MealPlan {
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name      String     @db.VarChar(80)
+  status    PlanStatus @default(active)
+  startsOn  DateTime   @map("starts_on") @db.Date
+
+  targetCalories Float @map("target_calories")
+  targetProtein  Float @map("target_protein")
+  targetCarbs    Float @map("target_carbs")
+  targetFat      Float @map("target_fat")
+
+  /// Explicacao exibida como "por que este plano".
+  rationale String? @db.VarChar(500)
+
+  /// Versao do gerador por regras (packages/core) que montou o plano.
+  generatorVersion String @map("generator_version") @db.VarChar(30)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  days MealPlanDay[]
+
+  /// Indice parcial "so um plano ativo por usuario" vai na migration SQL.
+  @@index([userId, status])
+  @@map("meal_plans")
+}
+
+/// Dia do plano. O briefing pedia MealPlan -> MealPlanItem direto, mas um plano
+/// semanal precisa dos niveis intermediarios: sem eles nao da para trocar uma
+/// unica refeicao de uma unica terca-feira sem regenerar tudo.
+model MealPlanDay {
+  id     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  planId String   @map("plan_id") @db.Uuid
+  plan   MealPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  /// 0 = segunda-feira.
+  dayIndex Int @map("day_index")
+
+  totalCalories Float @default(0) @map("total_calories")
+  totalProtein  Float @default(0) @map("total_protein")
+  totalCarbs    Float @default(0) @map("total_carbs")
+  totalFat      Float @default(0) @map("total_fat")
+
+  meals MealPlanMeal[]
+
+  @@unique([planId, dayIndex])
+  @@map("meal_plan_days")
+}
+
+model MealPlanMeal {
+  id    String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  dayId String      @map("day_id") @db.Uuid
+  day   MealPlanDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+
+  mealType      MealType @map("meal_type")
+  name          String   @db.VarChar(80)
+  suggestedTime String   @map("suggested_time") @db.VarChar(5)
+  preparationTip String? @map("preparation_tip") @db.VarChar(300)
+
+  totalCalories Float @default(0) @map("total_calories")
+  totalProtein  Float @default(0) @map("total_protein")
+  totalCarbs    Float @default(0) @map("total_carbs")
+  totalFat      Float @default(0) @map("total_fat")
+
+  items MealPlanItem[]
+
+  @@index([dayId])
+  @@map("meal_plan_meals")
+}
+
+model MealPlanItem {
+  id     String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mealId String       @map("meal_id") @db.Uuid
+  meal   MealPlanMeal @relation(fields: [mealId], references: [id], onDelete: Cascade)
+
+  foodId String? @map("food_id") @db.Uuid
+  food   Food?   @relation(fields: [foodId], references: [id], onDelete: SetNull)
+
+  name              String            @db.VarChar(120)
+  quantity          Float
+  unit              MeasureUnit
+  grams             Float
+  preparationMethod PreparationMethod @default(unknown) @map("preparation_method")
+
+  caloriesPer100 Float @map("calories_per_100")
+  proteinPer100  Float @map("protein_per_100")
+  carbsPer100    Float @map("carbs_per_100")
+  fatPer100      Float @map("fat_per_100")
+  fiberPer100    Float @default(0) @map("fiber_per_100")
+
+  /// Substituicoes equivalentes, geradas junto com o plano.
+  /// JSON e adequado aqui: sao dados de leitura, sem query propria.
+  substitutes Json @default("[]")
+
+  @@index([mealId])
+  @@map("meal_plan_items")
+}
+
+// ---------------------------------------------------------------------------
+// TREINO
+// ---------------------------------------------------------------------------
+
+/// Catalogo curado. O gerador de treino (regras do core) so escolhe daqui.
+model Exercise {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String      @db.VarChar(100)
+  canonicalName String      @unique @map("canonical_name") @db.VarChar(60)
+  primaryMuscle MuscleGroup @map("primary_muscle")
+  secondaryMuscles MuscleGroup[] @default([]) @map("secondary_muscles")
+  requiredEquipment Equipment[] @map("required_equipment")
+
+  instructions   String[] @default([])
+  commonMistakes String[] @default([]) @map("common_mistakes")
+
+  isCompound      Boolean @map("is_compound")
+  /// 1 = iniciante, 2 = intermediario, 3 = avancado.
+  difficultyLevel Int     @map("difficulty_level")
+  demoVideoUrl    String? @map("demo_video_url") @db.VarChar(300)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  workoutExercises WorkoutExercise[]
+
+  @@index([primaryMuscle])
+  @@map("exercises")
+}
+
+model WorkoutPlan {
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String     @db.VarChar(80)
+  split       String     @db.VarChar(40)
+  daysPerWeek Int        @map("days_per_week")
+  status      PlanStatus @default(active)
+  startsOn    DateTime   @map("starts_on") @db.Date
+  rationale   String?    @db.VarChar(500)
+
+  generatorVersion String @map("generator_version") @db.VarChar(30)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  workouts Workout[]
+
+  @@index([userId, status])
+  @@map("workout_plans")
+}
+
+/// Uma sessao do plano ("Treino A - Peito e Triceps"). `dayIndex` e a posicao
+/// no ciclo; o dia da semana vem de `trainingWeekdays()` do core. E um MOLDE: a execucao
+/// de verdade vira WorkoutLog, para o usuario poder repetir o mesmo treino
+/// varias vezes sem duplicar a prescricao.
+model Workout {
+  id     String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  planId String      @map("plan_id") @db.Uuid
+  plan   WorkoutPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  name                      String        @db.VarChar(80)
+  dayIndex                  Int           @map("day_index")
+  focusMuscles              MuscleGroup[] @map("focus_muscles")
+  estimatedDurationMinutes  Int           @map("estimated_duration_minutes")
+
+  exercises WorkoutExercise[]
+  logs      WorkoutLog[]
+
+  @@unique([planId, dayIndex])
+  @@map("workouts")
+}
+
+model WorkoutExercise {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workoutId String   @map("workout_id") @db.Uuid
+  workout   Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exerciseId String  @map("exercise_id") @db.Uuid
+  exercise  Exercise @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+
+  order           Int
+  sets            Int
+  repsMin         Int    @map("reps_min")
+  repsMax         Int    @map("reps_max")
+  restSeconds     Int    @map("rest_seconds")
+  suggestedLoadKg Float? @map("suggested_load_kg")
+  notes           String? @db.VarChar(200)
+
+  exerciseLogs ExerciseLog[]
+
+  @@unique([workoutId, order])
+  @@index([exerciseId])
+  @@map("workout_exercises")
+}
+
+/// Uma execucao de treino. Comeca com POST /treinos/:id/iniciar.
+model WorkoutLog {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String  @map("user_id") @db.Uuid
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutId String  @map("workout_id") @db.Uuid
+  workout   Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+
+  status      WorkoutStatus @default(in_progress)
+  startedAt   DateTime      @map("started_at") @db.Timestamptz(3)
+  completedAt DateTime?     @map("completed_at") @db.Timestamptz(3)
+  localDate   DateTime      @map("local_date") @db.Date
+
+  durationSeconds Int?    @map("duration_seconds")
+  /// Escala RPE de 1 a 10 declarada pelo usuario ao finalizar.
+  perceivedEffort Int?    @map("perceived_effort")
+  notes           String? @db.VarChar(500)
+
+  /// Volume total (soma de series x reps x carga). Denormalizado para o grafico
+  /// de progresso nao precisar varrer todas as series.
+  totalVolumeKg Float @default(0) @map("total_volume_kg")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  exerciseLogs ExerciseLog[]
+
+  @@index([userId, localDate(sort: Desc)])
+  @@index([userId, status])
+  @@map("workout_logs")
+}
+
+model ExerciseLog {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workoutLogId String     @map("workout_log_id") @db.Uuid
+  workoutLog   WorkoutLog @relation(fields: [workoutLogId], references: [id], onDelete: Cascade)
+
+  workoutExerciseId String          @map("workout_exercise_id") @db.Uuid
+  workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+
+  completedAt DateTime? @map("completed_at") @db.Timestamptz(3)
+  notes       String?   @db.VarChar(200)
+
+  sets SetLog[]
+
+  @@unique([workoutLogId, workoutExerciseId])
+  @@map("exercise_logs")
+}
+
+/// Uma serie executada.
+///
+/// O briefing pedia apenas WorkoutLog, mas sem granularidade de serie nao da
+/// para fazer progressao automatica de carga nem mostrar recorde pessoal - dois
+/// dos diferenciais listados. E uma linha por serie: barato.
+model SetLog {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  exerciseLogId String      @map("exercise_log_id") @db.Uuid
+  exerciseLog   ExerciseLog @relation(fields: [exerciseLogId], references: [id], onDelete: Cascade)
+
+  setNumber Int     @map("set_number")
+  reps      Int
+  loadKg    Float   @default(0) @map("load_kg")
+  /// Repeticoes em reserva. Base da progressao automatica.
+  rir       Int?
+  isWarmup  Boolean @default(false) @map("is_warmup")
+
+  @@unique([exerciseLogId, setNumber])
+  @@map("set_logs")
+}
+
+// ---------------------------------------------------------------------------
+// PROGRESSO E OBSERVABILIDADE
+// ---------------------------------------------------------------------------
+
+model ProgressLog {
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  metric     ProgressMetric
+  value      Float
+  measuredOn DateTime       @map("measured_on") @db.Date
+
+  notes String? @db.VarChar(300)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  /// Uma medida por metrica por dia. Repesagem no mesmo dia faz upsert.
+  @@unique([userId, metric, measuredOn])
+  @@index([userId, metric, measuredOn(sort: Desc)])
+  @@map("progress_logs")
+}
+
+/// Cada chamada ao servico de IA (sucesso ou falha).
+///
+/// Base da cota diaria por usuario, da taxa de falha por versao de modelo e
+/// do p95 de latencia. O modelo roda local (sem custo por chamada), mas a
+/// chamada consome CPU do servico de IA - por isso a cota continua valendo.
+model AiUsageLog {
+  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String? @map("user_id") @db.Uuid
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  operation    AiOperation
+  status       AiCallStatus
+  provider     String       @db.VarChar(40)
+  model        String       @db.VarChar(80)
+  modelVersion String       @map("model_version") @db.VarChar(30)
+  latencyMs    Int          @map("latency_ms")
+  errorMessage String?      @map("error_message") @db.VarChar(500)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([operation, status, createdAt(sort: Desc)])
+  @@map("ai_usage_logs")
+}

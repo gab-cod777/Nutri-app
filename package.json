@@ -1,0 +1,41 @@
+{
+  "name": "nutrisnap",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NutriSnap - acompanhamento de alimentacao, calorias e treino com analise da foto do prato por IA",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22.9.0"
+  },
+  "scripts": {
+    "postinstall": "npm run core:build && npm run prisma:generate --workspace @nutrisnap/api",
+    "dev": "node scripts/dev.mjs",
+    "setup:env": "node scripts/setup-env.mjs",
+    "setup:ia": "node scripts/ia.mjs setup",
+    "db:up": "docker compose up -d --wait",
+    "db:setup": "npm run db:setup --workspace @nutrisnap/api",
+    "dev:ia": "node scripts/ia.mjs dev",
+    "dev:api": "npm run dev --workspace @nutrisnap/api",
+    "dev:mobile": "npm run start --workspace @nutrisnap/mobile",
+    "demo": "node scripts/demo.mjs",
+    "demo:fotos": "node scripts/baixar-fotos-demo.mjs",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:ia": "node scripts/ia.mjs test",
+    "test:api": "npm run test --workspace @nutrisnap/api",
+    "core:build": "npm run build --workspace @nutrisnap/core",
+    "core:dev": "npm run dev --workspace @nutrisnap/core",
+    "core:test": "npm run test --workspace @nutrisnap/core"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "cors": "^2.8.6"
+  }
+}

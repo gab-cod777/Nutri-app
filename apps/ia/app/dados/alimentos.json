@@ -1,0 +1,1344 @@
+{
+ "_comment": "Tabela unica de alimentos (por 100 g/ml do alimento como consumido). Fonte: valores aproximados TACO 4a ed./USDA - REVISAR antes de producao. Lida pelo servico de IA (Python) e pelo seed do banco (Node).",
+ "foods": [
+  {
+   "canonicalName": "white_rice_cooked",
+   "name": "Arroz branco cozido",
+   "category": "grain",
+   "preparationMethod": "boiled",
+   "per100g": {
+    "calories": 128,
+    "protein": 2.5,
+    "carbs": 28.1,
+    "fat": 0.2,
+    "fiber": 1.6
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 150,
+    "minGrams": 80,
+    "maxGrams": 250
+   },
+   "clipPrompt": "white rice",
+   "tags": [],
+   "servings": [
+    {
+     "label": "1 colher de servir",
+     "unit": "tablespoon",
+     "quantity": 1,
+     "gramsEquivalent": 45,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "brown_rice_cooked",
+   "name": "Arroz integral cozido",
+   "category": "grain",
+   "preparationMethod": "boiled",
+   "per100g": {
+    "calories": 124,
+    "protein": 2.6,
+    "carbs": 25.8,
+    "fat": 1.0,
+    "fiber": 2.7
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 150,
+    "minGrams": 80,
+    "maxGrams": 250
+   },
+   "clipPrompt": "brown rice",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "pinto_beans_cooked",
+   "name": "Feijao carioca cozido",
+   "category": "legume",
+   "preparationMethod": "boiled",
+   "per100g": {
+    "calories": 76,
+    "protein": 4.8,
+    "carbs": 13.6,
+    "fat": 0.5,
+    "fiber": 8.5
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 100,
+    "minGrams": 60,
+    "maxGrams": 180
+   },
+   "clipPrompt": "brown beans stew",
+   "tags": [
+    "legume"
+   ],
+   "servings": [
+    {
+     "label": "1 concha",
+     "unit": "unit",
+     "quantity": 1,
+     "gramsEquivalent": 86,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "black_beans_cooked",
+   "name": "Feijao preto cozido",
+   "category": "legume",
+   "preparationMethod": "boiled",
+   "per100g": {
+    "calories": 77,
+    "protein": 4.5,
+    "carbs": 14.0,
+    "fat": 0.5,
+    "fiber": 8.4
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 100,
+    "minGrams": 60,
+    "maxGrams": 180
+   },
+   "clipPrompt": "black beans stew",
+   "tags": [
+    "legume"
+   ],
+   "servings": [
+    {
+     "label": "1 concha",
+     "unit": "unit",
+     "quantity": 1,
+     "gramsEquivalent": 86,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "lentils_cooked",
+   "name": "Lentilha cozida",
+   "category": "legume",
+   "preparationMethod": "boiled",
+   "per100g": {
+    "calories": 93,
+    "protein": 6.3,
+    "carbs": 16.3,
+    "fat": 0.5,
+    "fiber": 7.9
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 100,
+    "minGrams": 60,
+    "maxGrams": 180
+   },
+   "clipPrompt": "cooked lentils",
+   "tags": [
+    "legume"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "chicken_breast_grilled",
+   "name": "Peito de frango grelhado",
+   "category": "protein",
+   "preparationMethod": "grilled",
+   "per100g": {
+    "calories": 159,
+    "protein": 32.0,
+    "carbs": 0,
+    "fat": 2.5,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 120,
+    "minGrams": 80,
+    "maxGrams": 200
+   },
+   "clipPrompt": "grilled chicken breast",
+   "tags": [
+    "animal",
+    "meat"
+   ],
+   "servings": [
+    {
+     "label": "1 file medio",
+     "unit": "unit",
+     "quantity": 1,
+     "gramsEquivalent": 100,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "chicken_thigh_roasted",
+   "name": "Sobrecoxa de frango assada",
+   "category": "protein",
+   "preparationMethod": "baked",
+   "per100g": {
+    "calories": 233,
+    "protein": 28.7,
+    "carbs": 0,
+    "fat": 12.9,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 120,
+    "minGrams": 80,
+    "maxGrams": 200
+   },
+   "clipPrompt": "roasted chicken thigh",
+   "tags": [
+    "animal",
+    "meat"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "beef_steak_grilled",
+   "name": "Bife de alcatra grelhado",
+   "category": "protein",
+   "preparationMethod": "grilled",
+   "per100g": {
+    "calories": 241,
+    "protein": 31.9,
+    "carbs": 0,
+    "fat": 11.6,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 120,
+    "minGrams": 80,
+    "maxGrams": 200
+   },
+   "clipPrompt": "grilled beef steak",
+   "tags": [
+    "animal",
+    "meat"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "ground_beef_cooked",
+   "name": "Carne moida refogada",
+   "category": "protein",
+   "preparationMethod": "sauteed",
+   "per100g": {
+    "calories": 212,
+    "protein": 26.7,
+    "carbs": 0,
+    "fat": 10.9,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 110,
+    "minGrams": 70,
+    "maxGrams": 180
+   },
+   "clipPrompt": "ground beef",
+   "tags": [
+    "animal",
+    "meat"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "pork_loin_grilled",
+   "name": "Lombo de porco grelhado",
+   "category": "protein",
+   "preparationMethod": "grilled",
+   "per100g": {
+    "calories": 210,
+    "protein": 32.0,
+    "carbs": 0,
+    "fat": 8.0,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 120,
+    "minGrams": 80,
+    "maxGrams": 200
+   },
+   "clipPrompt": "grilled pork loin",
+   "tags": [
+    "animal",
+    "meat",
+    "pork"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "tilapia_fillet_grilled",
+   "name": "File de tilapia grelhado",
+   "category": "protein",
+   "preparationMethod": "grilled",
+   "per100g": {
+    "calories": 128,
+    "protein": 26.0,
+    "carbs": 0,
+    "fat": 2.7,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 130,
+    "minGrams": 80,
+    "maxGrams": 200
+   },
+   "clipPrompt": "grilled fish fillet",
+   "tags": [
+    "animal",
+    "fish"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "canned_tuna_in_water",
+   "name": "Atum em agua (lata)",
+   "category": "protein",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 116,
+    "protein": 25.5,
+    "carbs": 0,
+    "fat": 0.8,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 80,
+    "minGrams": 50,
+    "maxGrams": 120
+   },
+   "clipPrompt": "canned tuna",
+   "tags": [
+    "animal",
+    "fish"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "tofu_grilled",
+   "name": "Tofu grelhado",
+   "category": "protein",
+   "preparationMethod": "grilled",
+   "per100g": {
+    "calories": 144,
+    "protein": 15.8,
+    "carbs": 2.8,
+    "fat": 8.7,
+    "fiber": 2.3
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 120,
+    "minGrams": 80,
+    "maxGrams": 200
+   },
+   "clipPrompt": "grilled tofu",
+   "tags": [
+    "soy"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "egg_boiled",
+   "name": "Ovo cozido",
+   "category": "protein",
+   "preparationMethod": "boiled",
+   "per100g": {
+    "calories": 146,
+    "protein": 13.3,
+    "carbs": 0.6,
+    "fat": 9.5,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 100,
+    "minGrams": 50,
+    "maxGrams": 150
+   },
+   "clipPrompt": "boiled eggs",
+   "tags": [
+    "animal",
+    "egg"
+   ],
+   "servings": [
+    {
+     "label": "1 ovo",
+     "unit": "unit",
+     "quantity": 1,
+     "gramsEquivalent": 50,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "egg_fried",
+   "name": "Ovo frito",
+   "category": "protein",
+   "preparationMethod": "fried",
+   "per100g": {
+    "calories": 240,
+    "protein": 15.6,
+    "carbs": 1.2,
+    "fat": 18.6,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 50,
+    "minGrams": 50,
+    "maxGrams": 100
+   },
+   "clipPrompt": "fried egg",
+   "tags": [
+    "animal",
+    "egg"
+   ],
+   "servings": [
+    {
+     "label": "1 ovo",
+     "unit": "unit",
+     "quantity": 1,
+     "gramsEquivalent": 50,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "scrambled_eggs",
+   "name": "Ovos mexidos",
+   "category": "protein",
+   "preparationMethod": "sauteed",
+   "per100g": {
+    "calories": 167,
+    "protein": 11.0,
+    "carbs": 1.6,
+    "fat": 12.8,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 100,
+    "minGrams": 50,
+    "maxGrams": 150
+   },
+   "clipPrompt": "scrambled eggs",
+   "tags": [
+    "animal",
+    "egg"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "french_bread",
+   "name": "Pao frances",
+   "category": "grain",
+   "preparationMethod": "baked",
+   "per100g": {
+    "calories": 300,
+    "protein": 8.0,
+    "carbs": 58.6,
+    "fat": 3.1,
+    "fiber": 2.3
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 50,
+    "minGrams": 50,
+    "maxGrams": 100
+   },
+   "clipPrompt": "bread roll",
+   "tags": [
+    "gluten"
+   ],
+   "servings": [
+    {
+     "label": "1 pao",
+     "unit": "unit",
+     "quantity": 1,
+     "gramsEquivalent": 50,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "whole_wheat_bread",
+   "name": "Pao de forma integral",
+   "category": "grain",
+   "preparationMethod": "baked",
+   "per100g": {
+    "calories": 253,
+    "protein": 9.4,
+    "carbs": 49.9,
+    "fat": 3.7,
+    "fiber": 6.9
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 50,
+    "minGrams": 25,
+    "maxGrams": 75
+   },
+   "clipPrompt": "whole wheat bread slices",
+   "tags": [
+    "gluten"
+   ],
+   "servings": [
+    {
+     "label": "1 fatia",
+     "unit": "slice",
+     "quantity": 1,
+     "gramsEquivalent": 25,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "cheese_bread",
+   "name": "Pao de queijo",
+   "category": "grain",
+   "preparationMethod": "baked",
+   "per100g": {
+    "calories": 363,
+    "protein": 5.1,
+    "carbs": 34.2,
+    "fat": 24.6,
+    "fiber": 0.6
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 60,
+    "minGrams": 20,
+    "maxGrams": 120
+   },
+   "clipPrompt": "cheese bread balls",
+   "tags": [
+    "animal",
+    "dairy",
+    "lactose",
+    "egg"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "tapioca_crepe",
+   "name": "Tapioca (goma hidratada)",
+   "category": "grain",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 240,
+    "protein": 0,
+    "carbs": 60.0,
+    "fat": 0,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 60,
+    "minGrams": 40,
+    "maxGrams": 100
+   },
+   "clipPrompt": "tapioca crepe",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "couscous_cooked",
+   "name": "Cuscuz de milho cozido",
+   "category": "grain",
+   "preparationMethod": "steamed",
+   "per100g": {
+    "calories": 113,
+    "protein": 2.2,
+    "carbs": 25.3,
+    "fat": 0.7,
+    "fiber": 2.1
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 120,
+    "minGrams": 80,
+    "maxGrams": 200
+   },
+   "clipPrompt": "corn couscous",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "pasta_cooked",
+   "name": "Macarrao cozido",
+   "category": "grain",
+   "preparationMethod": "boiled",
+   "per100g": {
+    "calories": 158,
+    "protein": 5.8,
+    "carbs": 30.9,
+    "fat": 0.9,
+    "fiber": 1.8
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 150,
+    "minGrams": 100,
+    "maxGrams": 250
+   },
+   "clipPrompt": "spaghetti pasta",
+   "tags": [
+    "gluten"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "rolled_oats",
+   "name": "Aveia em flocos",
+   "category": "grain",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 394,
+    "protein": 13.9,
+    "carbs": 66.6,
+    "fat": 8.5,
+    "fiber": 9.1
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 30,
+    "minGrams": 15,
+    "maxGrams": 60
+   },
+   "clipPrompt": "oatmeal",
+   "tags": [
+    "gluten"
+   ],
+   "servings": [
+    {
+     "label": "1 colher de sopa",
+     "unit": "tablespoon",
+     "quantity": 1,
+     "gramsEquivalent": 15,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "potato_boiled",
+   "name": "Batata inglesa cozida",
+   "category": "vegetable",
+   "preparationMethod": "boiled",
+   "per100g": {
+    "calories": 52,
+    "protein": 1.2,
+    "carbs": 11.9,
+    "fat": 0,
+    "fiber": 1.3
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 150,
+    "minGrams": 80,
+    "maxGrams": 250
+   },
+   "clipPrompt": "boiled potatoes",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "french_fries",
+   "name": "Batata frita",
+   "category": "vegetable",
+   "preparationMethod": "deep_fried",
+   "per100g": {
+    "calories": 267,
+    "protein": 5.0,
+    "carbs": 35.6,
+    "fat": 13.1,
+    "fiber": 8.1
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 100,
+    "minGrams": 60,
+    "maxGrams": 180
+   },
+   "clipPrompt": "french fries",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "sweet_potato_boiled",
+   "name": "Batata doce cozida",
+   "category": "vegetable",
+   "preparationMethod": "boiled",
+   "per100g": {
+    "calories": 77,
+    "protein": 0.6,
+    "carbs": 18.4,
+    "fat": 0.1,
+    "fiber": 2.2
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 150,
+    "minGrams": 80,
+    "maxGrams": 250
+   },
+   "clipPrompt": "sweet potato",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "cassava_boiled",
+   "name": "Mandioca cozida",
+   "category": "vegetable",
+   "preparationMethod": "boiled",
+   "per100g": {
+    "calories": 125,
+    "protein": 0.6,
+    "carbs": 30.1,
+    "fat": 0.3,
+    "fiber": 1.6
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 120,
+    "minGrams": 80,
+    "maxGrams": 200
+   },
+   "clipPrompt": "boiled cassava",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "lettuce_raw",
+   "name": "Alface crua",
+   "category": "vegetable",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 11,
+    "protein": 1.3,
+    "carbs": 1.7,
+    "fat": 0.2,
+    "fiber": 1.8
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 40,
+    "minGrams": 20,
+    "maxGrams": 80
+   },
+   "clipPrompt": "lettuce salad",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "tomato_raw",
+   "name": "Tomate cru",
+   "category": "vegetable",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 15,
+    "protein": 1.1,
+    "carbs": 3.1,
+    "fat": 0.2,
+    "fiber": 1.2
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 60,
+    "minGrams": 30,
+    "maxGrams": 120
+   },
+   "clipPrompt": "sliced tomatoes",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "broccoli_boiled",
+   "name": "Brocolis cozido",
+   "category": "vegetable",
+   "preparationMethod": "boiled",
+   "per100g": {
+    "calories": 25,
+    "protein": 2.1,
+    "carbs": 4.4,
+    "fat": 0.5,
+    "fiber": 3.4
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 80,
+    "minGrams": 40,
+    "maxGrams": 150
+   },
+   "clipPrompt": "broccoli",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "carrot_raw",
+   "name": "Cenoura crua",
+   "category": "vegetable",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 34,
+    "protein": 1.3,
+    "carbs": 7.7,
+    "fat": 0.2,
+    "fiber": 3.2
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 50,
+    "minGrams": 30,
+    "maxGrams": 100
+   },
+   "clipPrompt": "grated carrot",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "banana_raw",
+   "name": "Banana prata",
+   "category": "fruit",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 98,
+    "protein": 1.3,
+    "carbs": 26.0,
+    "fat": 0.1,
+    "fiber": 2.0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 70,
+    "minGrams": 50,
+    "maxGrams": 140
+   },
+   "clipPrompt": "banana",
+   "tags": [],
+   "servings": [
+    {
+     "label": "1 banana media",
+     "unit": "unit",
+     "quantity": 1,
+     "gramsEquivalent": 70,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "apple_raw",
+   "name": "Maca",
+   "category": "fruit",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 56,
+    "protein": 0.3,
+    "carbs": 15.2,
+    "fat": 0,
+    "fiber": 1.3
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 130,
+    "minGrams": 100,
+    "maxGrams": 200
+   },
+   "clipPrompt": "apple",
+   "tags": [],
+   "servings": [
+    {
+     "label": "1 maca media",
+     "unit": "unit",
+     "quantity": 1,
+     "gramsEquivalent": 130,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "papaya_raw",
+   "name": "Mamao papaia",
+   "category": "fruit",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 40,
+    "protein": 0.5,
+    "carbs": 10.4,
+    "fat": 0.1,
+    "fiber": 1.0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 150,
+    "minGrams": 100,
+    "maxGrams": 300
+   },
+   "clipPrompt": "papaya",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "orange_raw",
+   "name": "Laranja",
+   "category": "fruit",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 37,
+    "protein": 1.0,
+    "carbs": 8.9,
+    "fat": 0.1,
+    "fiber": 0.8
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 150,
+    "minGrams": 100,
+    "maxGrams": 250
+   },
+   "clipPrompt": "orange fruit",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "avocado_raw",
+   "name": "Abacate",
+   "category": "fruit",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 96,
+    "protein": 1.2,
+    "carbs": 6.0,
+    "fat": 8.4,
+    "fiber": 6.3
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 100,
+    "minGrams": 50,
+    "maxGrams": 200
+   },
+   "clipPrompt": "avocado",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "whole_milk",
+   "name": "Leite integral",
+   "category": "dairy",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 61,
+    "protein": 3.2,
+    "carbs": 4.7,
+    "fat": 3.3,
+    "fiber": 0
+   },
+   "baseUnit": "ml",
+   "portion": {
+    "defaultGrams": 200,
+    "minGrams": 100,
+    "maxGrams": 300
+   },
+   "clipPrompt": "glass of milk",
+   "tags": [
+    "animal",
+    "dairy",
+    "lactose"
+   ],
+   "servings": [
+    {
+     "label": "1 copo",
+     "unit": "ml",
+     "quantity": 200,
+     "gramsEquivalent": 200,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "plain_yogurt",
+   "name": "Iogurte natural integral",
+   "category": "dairy",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 51,
+    "protein": 4.1,
+    "carbs": 1.9,
+    "fat": 3.0,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 170,
+    "minGrams": 100,
+    "maxGrams": 250
+   },
+   "clipPrompt": "yogurt",
+   "tags": [
+    "animal",
+    "dairy",
+    "lactose"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "minas_cheese",
+   "name": "Queijo minas frescal",
+   "category": "dairy",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 264,
+    "protein": 17.4,
+    "carbs": 3.2,
+    "fat": 20.2,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 30,
+    "minGrams": 20,
+    "maxGrams": 60
+   },
+   "clipPrompt": "white fresh cheese",
+   "tags": [
+    "animal",
+    "dairy",
+    "lactose"
+   ],
+   "servings": [
+    {
+     "label": "1 fatia",
+     "unit": "slice",
+     "quantity": 1,
+     "gramsEquivalent": 30,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "mozzarella_cheese",
+   "name": "Queijo mussarela",
+   "category": "dairy",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 330,
+    "protein": 22.6,
+    "carbs": 3.0,
+    "fat": 25.2,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 30,
+    "minGrams": 20,
+    "maxGrams": 60
+   },
+   "clipPrompt": "mozzarella cheese",
+   "tags": [
+    "animal",
+    "dairy",
+    "lactose"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "olive_oil",
+   "name": "Azeite de oliva",
+   "category": "fat_oil",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 884,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 100,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 8,
+    "minGrams": 5,
+    "maxGrams": 15
+   },
+   "clipPrompt": "olive oil",
+   "tags": [],
+   "servings": [
+    {
+     "label": "1 colher de sopa",
+     "unit": "tablespoon",
+     "quantity": 1,
+     "gramsEquivalent": 13,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "butter",
+   "name": "Manteiga com sal",
+   "category": "fat_oil",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 726,
+    "protein": 0.4,
+    "carbs": 0.1,
+    "fat": 82.4,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 10,
+    "minGrams": 5,
+    "maxGrams": 20
+   },
+   "clipPrompt": "butter",
+   "tags": [
+    "animal",
+    "dairy",
+    "lactose"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "peanut_butter",
+   "name": "Pasta de amendoim",
+   "category": "fat_oil",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 588,
+    "protein": 25.0,
+    "carbs": 20.0,
+    "fat": 50.0,
+    "fiber": 6.0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 20,
+    "minGrams": 10,
+    "maxGrams": 40
+   },
+   "clipPrompt": "peanut butter",
+   "tags": [
+    "nuts"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "farofa",
+   "name": "Farofa pronta",
+   "category": "grain",
+   "preparationMethod": "sauteed",
+   "per100g": {
+    "calories": 406,
+    "protein": 2.1,
+    "carbs": 80.3,
+    "fat": 9.1,
+    "fiber": 7.8
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 30,
+    "minGrams": 15,
+    "maxGrams": 60
+   },
+   "clipPrompt": "toasted cassava flour farofa",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "whey_protein",
+   "name": "Whey protein (po)",
+   "category": "supplement",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 400,
+    "protein": 80.0,
+    "carbs": 8.0,
+    "fat": 6.0,
+    "fiber": 0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 30,
+    "minGrams": 30,
+    "maxGrams": 60
+   },
+   "clipPrompt": "protein shake",
+   "tags": [
+    "animal",
+    "dairy",
+    "lactose"
+   ],
+   "servings": [
+    {
+     "label": "1 scoop",
+     "unit": "unit",
+     "quantity": 1,
+     "gramsEquivalent": 30,
+     "isDefault": true
+    }
+   ]
+  },
+  {
+   "canonicalName": "black_coffee",
+   "name": "Cafe sem acucar",
+   "category": "beverage",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 2,
+    "protein": 0.1,
+    "carbs": 0,
+    "fat": 0,
+    "fiber": 0
+   },
+   "baseUnit": "ml",
+   "portion": {
+    "defaultGrams": 100,
+    "minGrams": 50,
+    "maxGrams": 200
+   },
+   "clipPrompt": "cup of black coffee",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "orange_juice",
+   "name": "Suco de laranja natural",
+   "category": "beverage",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 45,
+    "protein": 0.7,
+    "carbs": 10.4,
+    "fat": 0.2,
+    "fiber": 0.2
+   },
+   "baseUnit": "ml",
+   "portion": {
+    "defaultGrams": 250,
+    "minGrams": 200,
+    "maxGrams": 400
+   },
+   "clipPrompt": "glass of orange juice",
+   "tags": [],
+   "servings": []
+  },
+  {
+   "canonicalName": "cola_soda",
+   "name": "Refrigerante de cola",
+   "category": "beverage",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 42,
+    "protein": 0,
+    "carbs": 10.6,
+    "fat": 0,
+    "fiber": 0
+   },
+   "baseUnit": "ml",
+   "portion": {
+    "defaultGrams": 350,
+    "minGrams": 200,
+    "maxGrams": 600
+   },
+   "clipPrompt": "glass of cola soda",
+   "tags": [
+    "sugary"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "feijoada",
+   "name": "Feijoada",
+   "category": "prepared_dish",
+   "preparationMethod": "stewed",
+   "per100g": {
+    "calories": 117,
+    "protein": 8.7,
+    "carbs": 11.6,
+    "fat": 6.5,
+    "fiber": 5.1
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 250,
+    "minGrams": 150,
+    "maxGrams": 400
+   },
+   "clipPrompt": "feijoada black bean and pork stew",
+   "tags": [
+    "animal",
+    "meat",
+    "pork",
+    "legume"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "lasagna_beef",
+   "name": "Lasanha a bolonhesa",
+   "category": "prepared_dish",
+   "preparationMethod": "baked",
+   "per100g": {
+    "calories": 150,
+    "protein": 8.5,
+    "carbs": 13.0,
+    "fat": 7.0,
+    "fiber": 1.0
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 300,
+    "minGrams": 200,
+    "maxGrams": 450
+   },
+   "clipPrompt": "lasagna",
+   "tags": [
+    "animal",
+    "meat",
+    "dairy",
+    "lactose",
+    "gluten",
+    "egg"
+   ],
+   "servings": []
+  },
+  {
+   "canonicalName": "milk_chocolate",
+   "name": "Chocolate ao leite",
+   "category": "sweet",
+   "preparationMethod": "raw",
+   "per100g": {
+    "calories": 540,
+    "protein": 7.2,
+    "carbs": 59.6,
+    "fat": 30.3,
+    "fiber": 2.2
+   },
+   "baseUnit": "g",
+   "portion": {
+    "defaultGrams": 25,
+    "minGrams": 10,
+    "maxGrams": 60
+   },
+   "clipPrompt": "chocolate bar",
+   "tags": [
+    "animal",
+    "dairy",
+    "lactose",
+    "sugary"
+   ],
+   "servings": []
+  }
+ ]
+}
